@@ -6,13 +6,6 @@ const { query } = require("./Model/connection");
 const app = express();
 const port = process.env.PORT || 3000;
 
-const db = mysql.createPool({
-    host: "student-databases.cvode4s4cwrc.us-west-2.rds.amazonaws.com",
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: "LIAMGABBARD"
-});
-
 app.use(express.json());
 
 app.get("/", async (req, res) => {
@@ -33,7 +26,7 @@ app.get("/", async (req, res) => {
     }
 });
 
-app.post("/temperature/", async (req, res) => {
+app.post(["/api/sensor", "/temperature/"], async (req, res) => {
     const { temperature } = req.body;
 
     if (typeof temperature !== "number" || !Number.isFinite(temperature)) {
