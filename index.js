@@ -1,4 +1,4 @@
-require("dotenv").config({ override: true });
+require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 
 const express = require("express");
 const { query } = require("./Model/connection");
