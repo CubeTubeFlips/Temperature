@@ -1,12 +1,10 @@
-let express = require("express");
-const path = require("path");
+const express = require("express");
 const { query } = require("./Model/connection");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/api/sensor", async (req, res) => {
     const { temperature } = req.body;
@@ -48,8 +46,7 @@ app.get("/api/temperature", async (req, res) => {
     }
 });
 
-[3000, 8080].forEach((port) => {
-    app.listen(port, "0.0.0.0", () => {
-        console.log(`Server running on port ${port}`);
-    });
+app.listen(port, "0.0.0.0", () => {
+    console.log(`Server running on port ${port}`);
 });
+
