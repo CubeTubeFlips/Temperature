@@ -81,6 +81,6 @@ const db = await getConnection();
 
 });
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, '0.0.0.0.0/0', () => {
     console.log(`Application listening at http://localhost:${port}`);
 })
