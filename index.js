@@ -1,12 +1,39 @@
+require("dotenv").config();
+
 const express = require("express");
 const { query } = require("./Model/connection");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+const db = mysql.createPool({
+    host: "student-databases.cvode4s4cwrc.us-west-2.rds.amazonaws.com",
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: "LIAMGABBARD"
+});
+
 app.use(express.json());
 
-app.post("/api/sensor", async (req, res) => {
+app.get("/", async (req, res) => {
+    try {
+        const readings = await query(
+            "SELECT id, temperature FROM temperature ORDER BY id DESC"
+        );
+        const rows = readings.map(({ id, temperature }) =>
+            `<tr><td>${escapeHtml(id)}</td><td>${escapeHtml(temperature)}</td></tr>`
+        ).join("");
+
+        res.type("html").send(
+            `<h1>Temperature readings</h1><table><tr><th>ID</th><th>Temperature (&deg;F)</th></tr>${rows || "<tr><td colspan=\"2\">No readings yet</td></tr>"}</table>`
+        );
+    } catch (error) {
+        console.error("Unable to display temperature readings:", error);
+        res.status(500).type("text").send("Unable to load temperature readings.");
+    }
+});
+
+app.post("/temperature/", async (req, res) => {
     const { temperature } = req.body;
 
     if (typeof temperature !== "number" || !Number.isFinite(temperature)) {
@@ -50,3 +77,15 @@ app.listen(port, "0.0.0.0", () => {
     console.log(`Server running on port ${port}`);
 });
 
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+        return entities[character];
+    });
+}
